@@ -2,7 +2,20 @@ import { createTripInfoTemplate } from '../template/trip-info-template.js';
 import { createElement } from '../render.js';
 
 export default class TripInfoView {
-  getTemplate = () => createTripInfoTemplate();
+  constructor(destinationsModel, points) {
+    this.points = points;
+    this.destinationsModel = destinationsModel;
+  }
+
+  getTemplate = () => {
+    const destinations = [];
+
+    for (let i = 0; i < this.points.length; i++) {
+      destinations.push(this.destinationsModel.getById(this.points[i].destination));
+    }
+
+    return createTripInfoTemplate(destinations);
+  };
 
   getElement() {
     if (!this.element) {
