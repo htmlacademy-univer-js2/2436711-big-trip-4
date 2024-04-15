@@ -78,10 +78,26 @@ const OFFERS_TITLE = [
   'Travel by train'
 ];
 
-const POINTS_COUNT = 4;
+const PointsCount = {
+  MIN: 0,
+  MAX: 4
+};
+
 
 const MS_IN_DAY = 86400000;
 
 const MS_IN_HOUR = 3600000;
 
-export { CITIES, DESCRIPTION, EMPTY_POINT, OFFERS_TITLE, POINTS_COUNT, POINT_TYPE, MS_IN_DAY, MS_IN_HOUR, Price, Duration, DateFormat, PicturesCount, CountOffers };
+const FILTERS = ['Everything', 'Future', 'Present', 'Past'];
+
+const SORTS = ['Day', 'Event', 'Time', 'Price', 'Offers'];
+
+const FilterMessages = {
+  'Everything': 'Click New Event to create your first point',
+  'Future': 'There are no future events now',
+  'Present': 'There are no present events now',
+  'Past': 'There are no past events now'
+};
+
+export { CITIES, DESCRIPTION, EMPTY_POINT, OFFERS_TITLE, PointsCount, POINT_TYPE, MS_IN_DAY,
+  MS_IN_HOUR, Price, Duration, DateFormat, PicturesCount, CountOffers, FILTERS, FilterMessages, SORTS };
