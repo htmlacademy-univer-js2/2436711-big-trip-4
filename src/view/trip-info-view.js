@@ -3,20 +3,20 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 export default class TripInfoView extends AbstractView {
   #points = null;
-  #destinationsModel = null;
+  #destinations = null;
 
-  constructor(destinationsModel, points) {
+  constructor(destinations, points) {
     super();
     this.#points = points;
-    this.#destinationsModel = destinationsModel;
+    this.#destinations = destinations;
   }
 
   get template() {
-    const destinations = [];
+    let totalPrice = 0;
     for (let i = 0; i < this.#points.length; i++) {
-      destinations.push(this.#destinationsModel.getById(this.#points[i].destination));
+      totalPrice += this.#points[i].basePrice;
     }
 
-    return createTripInfoTemplate(destinations);
+    return createTripInfoTemplate(this.#destinations, totalPrice);
   }
 }
