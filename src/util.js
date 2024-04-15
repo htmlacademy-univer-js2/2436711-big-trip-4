@@ -1,5 +1,6 @@
 import { Duration, DateFormat, MS_IN_HOUR, MS_IN_DAY} from './const.js';
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 
 const duration = require('dayjs/plugin/duration');
 dayjs.extend(duration);
