@@ -24,7 +24,7 @@ git push
 ¹ В `academy` должна быть ссылка на репозиторий Академии. Если его там нет, добавьте:
 
 ```
-git remote add academy git@github.com:htmlacademy-univer-js2/2436711-big-trip-4.git
+git remote add academy git@github.com:htmlacademy-univer-js2/2432299-big-trip-4.git
 ```
 
 Когда вы обновили `master`, создайте ветку для нового задания:
