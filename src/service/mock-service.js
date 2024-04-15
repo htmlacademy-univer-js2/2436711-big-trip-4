@@ -1,27 +1,31 @@
-import { generateDestination } from '../mock/destination.js';
+import { generateDestinations } from '../mock/destination.js';
 import { generateOffer } from '../mock/offer.js';
 import { generateMockPoints } from '../mock/point.js';
 import { getRandomElement, getRandomInt } from '../util.js';
-import { POINT_COUNT, CountOffers, POINT_TYPE } from '../const.js';
+import { POINTS_COUNT, CountOffers, POINT_TYPE } from '../const.js';
 
 export default class MockService {
-  destinations = [];
-  offers = [];
-  points = [];
+  #destinations = [];
+  #offers = [];
+  #points = [];
 
   constructor() {
-    this.destinations = this.generateDestinations();
-    this.offers = this.generateOffers();
-    this.points = this.generatePoints();
+    this.#destinations = generateDestinations();
+    this.#offers = this.generateOffers();
+    this.#points = this.generatePoints();
   }
 
-  getDestinations = () => this.destinations;
+  get destinations() {
+    return this.#destinations;
+  }
 
-  getOffers = () => this.offers;
+  get offers() {
+    return this.#offers;
+  }
 
-  getPoints = () => this.points;
-
-  generateDestinations = () => generateDestination();
+  get points() {
+    return this.#points;
+  }
 
   generateOffers = () => POINT_TYPE.map((type) => {
     const length = getRandomInt(CountOffers.MIN, CountOffers.MAX);
@@ -31,14 +35,14 @@ export default class MockService {
     };
   });
 
-  generatePoints = () => Array.from({length: POINT_COUNT}, () => {
+  generatePoints = () => Array.from({length: POINTS_COUNT}, () => {
     const type = getRandomElement(POINT_TYPE);
 
-    const destination = getRandomElement(this.destinations);
+    const destinations = getRandomElement(this.#destinations);
 
     const hasOffers = getRandomInt(0, 1);
 
-    const offersByType = this.offers.find((offer) => offer.type === type);
+    const offersByType = this.#offers.find((offer) => offer.type === type);
 
     let offerIds = [];
 
@@ -46,6 +50,6 @@ export default class MockService {
       offerIds = offersByType.offers.map((offer) => offer.id);
     }
 
-    return generateMockPoints(type, destination.id, offerIds);
+    return generateMockPoints(type, destinations.id, offerIds);
   });
 }

@@ -1,7 +1,7 @@
 import { getRandomElement, getRandomInt } from '../util.js';
 import { CITIES, DESCRIPTION, PicturesCount } from '../const.js';
 
-const generateDestination = () => CITIES.map((city) => (
+const generateDestinations = () => CITIES.map((city) => (
   {
     id: crypto.randomUUID(),
     name: city,
@@ -14,4 +14,4 @@ const generateDestination = () => CITIES.map((city) => (
     ))
   }));
 
-export { generateDestination };
+export { generateDestinations };
