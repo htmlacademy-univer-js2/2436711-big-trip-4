@@ -78,10 +78,10 @@ const OFFERS_TITLE = [
   'Travel by train'
 ];
 
-const POINT_COUNT = 3;
+const POINTS_COUNT = 4;
 
 const MS_IN_DAY = 86400000;
 
 const MS_IN_HOUR = 3600000;
 
-export { CITIES, DESCRIPTION, EMPTY_POINT, OFFERS_TITLE, POINT_COUNT, POINT_TYPE, MS_IN_DAY, MS_IN_HOUR, Price, Duration, DateFormat, PicturesCount, CountOffers };
+export { CITIES, DESCRIPTION, EMPTY_POINT, OFFERS_TITLE, POINTS_COUNT, POINT_TYPE, MS_IN_DAY, MS_IN_HOUR, Price, Duration, DateFormat, PicturesCount, CountOffers };
