@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import {POINT_TYPES, DESTINATIONS} from '../const.js';
 import {getLastWord, camelizer, fullDate} from '../utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import DatePicker from '../date-picker';
 
 const BLANK_POINT = {
   type: 'flight',
@@ -176,6 +177,7 @@ export default class EditPointView extends AbstractStatefulView{
     this.element.querySelector('.event__input--destination').addEventListener('change', this.destinationChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.priceChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.offersChangeHandler);
+    this.setupDatePickers();
   }
 
   formSubmitHandler(event) {
@@ -217,8 +219,39 @@ export default class EditPointView extends AbstractStatefulView{
     });
   };
 
-
   reset = (point) => {
     this.updateElement({...point});
+  };
+
+  setupDatePickers() {
+    this.datePickerFrom = new DatePicker({
+      element: this.element.querySelector('#event-start-time-1'),
+      defaultDate: this._state.dateFrom,
+      maxDate: this._state.dateTo,
+      onClose: this.#dateFromCloseHandler,
+    });
+
+    this.datePickerTo = new DatePicker({
+      element: this.element.querySelector('#event-end-time-1'),
+      defaultDate: this._state.dateTo,
+      minDate: this._state.dateFrom,
+      onClose: this.#dateToCloseHandler,
+    });
+  }
+
+  #dateFromCloseHandler = ([userDate]) => {
+    this._setState({
+      dateFrom: userDate
+    });
+
+    this.datePickerTo.setMinDate(this._state.dateFrom);
+  };
+
+  #dateToCloseHandler = ([userDate]) => {
+    this._setState({
+      dateTo: userDate
+    });
+
+    this.datePickerFrom.setMaxDate(this._state.dateTo);
   };
 }
