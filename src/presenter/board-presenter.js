@@ -1,37 +1,46 @@
-import EventListView from '../view/event-list-view.js';
-import PointEditView from '../view/point-edit-view.js';
-import PointView from '../view/point-view.js';
-import SortView from '../view/sort-view.js';
-
-import { POINT_COUNT } from '../const.js';
-
-import { render } from '../render.js';
+import {render} from '../framework/render';
+import PointListView from '../view/point-list-view';
+import SortView from '../view/sort-view';
+import EmptyPointView from '../view/empty-point-view';
+import PointPresenter from './point-presenter';
 
 export default class BoardPresenter {
-  sortComponent = new SortView();
-  eventListComponent = new EventListView();
-
-  constructor(container, destinationsModel, offersModel, pointsModel) {
+  constructor({container, pointsModel }) {
     this.container = container;
-    this.destinationsModel = destinationsModel;
-    this.offersModel = offersModel;
     this.pointsModel = pointsModel;
-
-    this.points = [...pointsModel.get()];
+    this.pointPresenters = new Map();
   }
 
   init() {
-    render(this.sortComponent, this.container);
-    render(this.eventListComponent, this.container);
+    this.points = [...this.pointsModel.getPoints()];
+    if (this.points.length) {
+      this.pointsListComponent = new PointListView();
+      this.sortComponent = new SortView();
 
-    render(new PointEditView(this.points[POINT_COUNT - 1],
-      this.destinationsModel.getById(this.points[POINT_COUNT - 1].destination),
-      this.offersModel.getByType(this.points[POINT_COUNT - 1].type)), this.eventListComponent.getElement());
+      render(this.sortComponent, this.container);
+      render(this.pointsListComponent, this.container);
 
-    for (let i = 0; i < this.points.length - 1; i++) {
-      render(new PointView(this.points[i],
-        this.destinationsModel.getById(this.points[i].destination),
-        this.offersModel.getByType(this.points[i].type)), this.eventListComponent.getElement());
+      this.points.forEach((point) => this.renderPoint(point));
+    } else {
+      render(new EmptyPointView(), this.container);
     }
+  }
+
+  handlePointChange = (updatedPoint) => {
+    this.points = this.points.map((item) => item.id === updatedPoint.id ? updatedPoint : item);
+    this.pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  handleModeChange = () => {
+    this.pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  renderPoint(point) {
+    const pointPresenter = new PointPresenter({
+      pointsListContainer: this.pointsListComponent.element,
+      onDataChange: this.handlePointChange,
+      onModeChange: this.handleModeChange});
+    pointPresenter.init(point);
+    this.pointPresenters.set(point.id, pointPresenter);
   }
 }
