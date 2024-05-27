@@ -130,6 +130,15 @@ function sortPrice(pointA, pointB) {
   }
 }
 
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
+function isPriceEqual(priceA, priceB) {
+  return priceA === priceB;
+}
+
+export { isDatesEqual, isPriceEqual };
 export {sortDay, sortTime, sortPrice};
 export { getRandomElement, getRandomInt, fullDate, getDuration, shortDate, humanizeHHmm, getLastWord, camelizer, generateFilter };
 export { isFutureDate, isPastDate, isPresentDate };

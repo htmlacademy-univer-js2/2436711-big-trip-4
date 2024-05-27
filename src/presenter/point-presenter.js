@@ -1,6 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view';
+import { USER_ACTION, UPDATE_TYPE } from '../const.js';
+import { isPriceEqual, isDatesEqual } from '../utils';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -38,6 +40,7 @@ export default class PointPresenter {
       offers: this.offersModel.getOffers(),
       onFormReset: this.handleFormReset,
       onFormSubmit: this.handleFormSubmit,
+      onDeleteClick: this.handleDeleteClick
     });
 
     if (prevPointComponent === undefined || prevPointEditComponent === undefined) {
@@ -69,7 +72,11 @@ export default class PointPresenter {
   };
 
   handleFavoriteClick = () => {
-    this.onDataChange({...this.point, isFavorite: !this.point.isFavorite});
+    this.onDataChange(
+      USER_ACTION.UPDATE_POINT,
+      UPDATE_TYPE.MINOR,
+      {...this.point, isFavorite: !this.point.isFavorite},
+    );
   };
 
   replaceCardToForm() {
@@ -97,13 +104,30 @@ export default class PointPresenter {
     this.replaceCardToForm();
   };
 
-  handleFormSubmit = (updatedPoint) => {
-    this.point = updatedPoint;
+  handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isDatesEqual(this.point.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.point.dateTo, update.dateTo) ||
+      !isPriceEqual(this.point.basePrice, update.basePrice);
+
+    this.onDataChange(
+      USER_ACTION.UPDATE_POINT,
+      isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
+      update,
+    );
     this.replaceFormToCard();
   };
 
   handleFormReset = () => {
     this.pointEditComponent.reset(this.point);
     this.replaceFormToCard();
+  };
+
+  handleDeleteClick = (point) => {
+    this.onDataChange(
+      USER_ACTION.DELETE_POINT,
+      UPDATE_TYPE.MINOR,
+      point,
+    );
   };
 }
