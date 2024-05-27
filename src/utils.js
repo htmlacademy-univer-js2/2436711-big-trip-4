@@ -70,6 +70,10 @@ function isPresentDate(dateFrom, dateTo) {
   return now.isSameOrAfter(dateFrom) && now.isSameOrBefore(dateTo);
 }
 
+function humanizeDate(date, format) {
+  return date ? dayjs(date).format(format) : '';
+}
+
 function generateFilter(points) {
   return Object.entries(FILTER_DATA_DETECTION).map(
     ([filterType, filterPoints]) => ({
@@ -139,6 +143,6 @@ function isPriceEqual(priceA, priceB) {
 }
 
 export { isDatesEqual, isPriceEqual };
-export {sortDay, sortTime, sortPrice};
-export { getRandomElement, getRandomInt, fullDate, getDuration, shortDate, humanizeHHmm, getLastWord, camelizer, generateFilter };
+export { sortDay, sortTime, sortPrice };
+export { humanizeDate, getRandomElement, getRandomInt, fullDate, getDuration, shortDate, humanizeHHmm, getLastWord, camelizer, generateFilter };
 export { isFutureDate, isPastDate, isPresentDate };

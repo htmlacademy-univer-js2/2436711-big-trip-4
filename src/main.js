@@ -7,6 +7,12 @@ import PointsModel from './model/points-model';
 import FilterModel from './model/filter-model.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {render} from './framework/render';
+import DestinationsApi from './api/destinations-api';
+import OffersApi from './api/offers-api';
+import PointsApi from './api/points-api';
+
+const AUTHORIZATION = 'Basic timurdistel';
+const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
 
 const header = document.querySelector('.page-header');
 const infoHeader = document.querySelector('.trip-main');
@@ -15,9 +21,9 @@ const headerFilterElement = header.querySelector('.trip-controls__filters');
 const main = document.querySelector('.page-main');
 const containerElement = main.querySelector('.trip-events');
 
-const destinationsModel = new DestinationsModel();
-const offersModel = new OffersModel();
-const pointsModel = new PointsModel();
+const destinationsModel = new DestinationsModel({destinationsApi: new DestinationsApi(END_POINT, AUTHORIZATION)});
+const offersModel = new OffersModel({offersApi: new OffersApi(END_POINT, AUTHORIZATION)});
+const pointsModel = new PointsModel({pointsApi: new PointsApi(END_POINT, AUTHORIZATION)});
 const filterModel = new FilterModel();
 
 const newPointButtonComponent = new NewPointButtonView({
@@ -53,8 +59,14 @@ function handleNewPointButtonClick() {
   newPointButtonComponent.element.disabled = true;
 }
 
-render(newPointButtonComponent, infoHeader);
+async function initModels() {
+  await destinationsModel.init();
+  await offersModel.init();
+  await pointsModel.init();
+  render(newPointButtonComponent, infoHeader);
+}
 
 infoPresenter.init();
 filterPresenter.init();
 boardPresenter.init();
+initModels();
