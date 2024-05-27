@@ -1,15 +1,5 @@
-const createTripInfoTitle = (destinations) => destinations.map((d) => d.name).join(' &mdash; ');
+import {NO_POINTS_TEXT_TYPE} from '../const';
 
-const createTripInfoTemplate = (destinations, totalPrice) => `<section class="trip-main__trip-info  trip-info">
-<div class="trip-info__main">
-  <h1 class="trip-info__title">${createTripInfoTitle(destinations)}</h1>
-
-  <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
-</div>
-
-<p class="trip-info__cost">
-  Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPrice}</span>
-</p>
-</section>`;
-
-export { createTripInfoTemplate };
+export default function createTripInfoTemplate(filterType) {
+  return `<p class="trip-events__msg">${NO_POINTS_TEXT_TYPE[filterType]}</p>`;
+}

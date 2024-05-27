@@ -1,31 +1,21 @@
 import { render, replace, remove } from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view';
-import { UPDATE_TYPE, USER_ACTION } from '../const.js';
+import { UPDATE_TYPE, USER_ACTION, MODE } from '../const.js';
 import { isPriceEqual, isDatesEqual } from '../utils';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export default class PointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
-
   #destinationsModel = null;
   #offersModel = null;
-
   #pointComponent = null;
   #pointEditComponent = null;
-
   #point = null;
-
   #onModeChange = null;
-  #mode = Mode.DEFAULT;
+  #mode = MODE.DEFAULT;
 
-  constructor({ pointsListContainer, onDataChange, onModeChange, destinationsModel,
-    offersModel, }) {
+  constructor({ pointsListContainer, onDataChange, onModeChange, destinationsModel, offersModel }) {
     this.#pointListContainer = pointsListContainer;
     this.#handleDataChange = onDataChange;
     this.#onModeChange = onModeChange;
@@ -61,13 +51,13 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#mode === Mode.DEFAULT) {
+    if (this.#mode === MODE.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === MODE.EDITING) {
       replace(this.#pointComponent, prevPointEditComponent);
-      this.#mode = Mode.DEFAULT;
+      this.#mode = MODE.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -80,13 +70,13 @@ export default class PointPresenter {
   }
 
   resetView = () => {
-    if (this.#mode !== Mode.DEFAULT) {
+    if (this.#mode !== MODE.DEFAULT) {
       this.#replaceFormToCard();
     }
   };
 
   setSaving() {
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === MODE.EDITING) {
       this.#pointEditComponent.updateElement({
         isDisabled: true,
         isSaving: true,
@@ -95,7 +85,7 @@ export default class PointPresenter {
   }
 
   setDeleting() {
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === MODE.EDITING) {
       this.#pointEditComponent.updateElement({
         isDisabled: true,
         isDeleting: true,
@@ -115,13 +105,13 @@ export default class PointPresenter {
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#onModeChange();
-    this.#mode = Mode.EDITING;
+    this.#mode = MODE.EDITING;
   }
 
   #replaceFormToCard() {
     replace(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = Mode.DEFAULT;
+    this.#mode = MODE.DEFAULT;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -163,7 +153,7 @@ export default class PointPresenter {
   };
 
   setAborting() {
-    if (this.#mode === Mode.DEFAULT) {
+    if (this.#mode === MODE.DEFAULT) {
       this.#pointComponent.shake();
       return;
     }

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import {FILTER_DATA_DETECTION} from './const';
 import duration from 'dayjs/plugin/duration';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
@@ -13,18 +12,6 @@ const HOUR_IN_DAY = 24;
 const DAY_IN_YEAR = 365;
 const MIN_IN_DAY = MIN_IN_HOUR * HOUR_IN_DAY;
 const MIN_IN_YEAR = MIN_IN_DAY * DAY_IN_YEAR;
-
-function getRandomElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
-function getRandomInt(min, max) {
-  return Math.round((max - min) * Math.random() + min);
-}
-
-function fullDate(date) {
-  return date ? dayjs(date).format('DD/MM/YY HH:mm') : '';
-}
 
 function shortDate(date) {
   return date ? dayjs(date).format('MMM DD') : '';
@@ -70,38 +57,21 @@ function isPresentDate(dateFrom, dateTo) {
   return now.isSameOrAfter(dateFrom) && now.isSameOrBefore(dateTo);
 }
 
-function humanizeDate(date, format) {
-  return date ? dayjs(date).format(format) : '';
-}
-
-function generateFilter(points) {
-  return Object.entries(FILTER_DATA_DETECTION).map(
-    ([filterType, filterPoints]) => ({
-      type: filterType,
-      count: filterPoints(points).length,
-    }),
-  );
-}
-
 function getWeightForNullDate(dateA, dateB) {
   if (dateA === null && dateB === null) {
     return 0;
   }
-
   if (dateA === null) {
     return 1;
   }
-
   if (dateB === null) {
     return -1;
   }
-
   return null;
 }
 
 function sortDay(pointA, pointB) {
   const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
-
   return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
@@ -142,7 +112,55 @@ function isPriceEqual(priceA, priceB) {
   return priceA === priceB;
 }
 
-export { isDatesEqual, isPriceEqual };
-export { sortDay, sortTime, sortPrice };
-export { humanizeDate, getRandomElement, getRandomInt, fullDate, getDuration, shortDate, humanizeHHmm, getLastWord, camelizer, generateFilter };
-export { isFutureDate, isPastDate, isPresentDate };
+function getInfoFromPoints({ points, destinations, offers }) {
+  if (!points || !destinations || !offers) {
+    return {
+      destinationsString: '',
+      datesString: '',
+      total: 0
+    };
+  }
+  const sortedPoints = [...points.sort(sortDay)];
+  const arrayOfDestinations = [];
+  let sumOfTrip = 0;
+  sortedPoints.forEach((point) => {
+    const destination = destinations.find((dest) => dest.id === point.destination).name;
+    arrayOfDestinations.push(destination);
+    const offersOfCurrentType = offers.find((offer) => offer.type === point.type).offers;
+    offersOfCurrentType.forEach((offer) => {
+      if (point.offers.includes(offer.id)) {
+        sumOfTrip += offer.price;
+      }
+    });
+    sumOfTrip += point.basePrice;
+  });
+
+  return {
+    destinationsString: createViewOfPath(arrayOfDestinations),
+    datesString: createViewOfDates(sortedPoints[0]?.dateFrom, sortedPoints[sortedPoints.length - 1]?.dateTo),
+    total: sumOfTrip
+  };
+}
+
+function createViewOfPath(destinations) {
+  let string = '';
+  if (destinations.length < 4) {
+    destinations.forEach((destination, index) => {
+      if (index !== destinations.length - 1) {
+        string += `${destination} &mdash; `;
+      } else {
+        string += `${destination}`;
+      }
+    });
+  } else {
+    string = `${destinations[0]} &mdash; ... &mdash; ${destinations[destinations.length - 1]}`;
+  }
+  return string;
+}
+
+function createViewOfDates(dateA, dateB) {
+  return dateA && dateB ? `${dayjs(dateA).format('D MMM').toUpperCase()}&nbsp;&mdash;&nbsp;${dayjs(dateB).format('D MMM').toUpperCase()}` : '';
+}
+
+export { getInfoFromPoints, isDatesEqual, isPriceEqual, sortDay, sortTime, sortPrice, getDuration,
+  shortDate, humanizeHHmm, getLastWord, camelizer, isFutureDate, isPastDate, isPresentDate };

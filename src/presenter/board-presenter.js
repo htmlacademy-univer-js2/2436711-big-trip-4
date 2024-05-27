@@ -1,21 +1,15 @@
-import {FILTER_DATA_DETECTION, FILTER_TYPES, SORT_TYPE, UPDATE_TYPE, USER_ACTION} from '../const';
+import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
-import {remove, render} from '../framework/render';
 import EmptyPointView from '../view/empty-point-view';
 import SortView from '../view/sort-view';
-import PointPresenter from './point-presenter';
-import {sortDay, sortPrice, sortTime} from '../utils';
 import LoadingView from '../view/loading-view';
+import {remove, render, RenderPosition} from '../framework/render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
-
-const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
-};
+import {FILTER_DATA_DETECTION, FILTER_TYPES, SORT_TYPE, UPDATE_TYPE, USER_ACTION, TIME_LIMIT} from '../const';
+import {sortDay, sortPrice, sortTime} from '../utils';
 
 export default class BoardPresenter {
   #container = null;
-
   #pointsModel = null;
   #destinationsModel = null;
   #offersModel = null;
@@ -25,24 +19,20 @@ export default class BoardPresenter {
   #noPointComponent = null;
   #newPointButtonComponent = null;
   #loadingComponent = new LoadingView();
-
   #pointPresenters = new Map();
   #newPointPresenter = null;
-
   #sortType = SORT_TYPE.DAY;
   #filterType = FILTER_TYPES.EVERYTHING;
-
   #onNewPointDestroy = null;
-
   #creatingNewPoint = false;
   #isLoading = true;
-
   #uiBlocker = new UiBlocker({
-    lowerLimit: TimeLimit.LOWER_LIMIT,
-    upperLimit: TimeLimit.UPPER_LIMIT
+    lowerLimit: TIME_LIMIT.LOWER_LIMIT,
+    upperLimit: TIME_LIMIT.UPPER_LIMIT
   });
 
-  constructor({ container, pointsModel, destinationsModel, offersModel, filterModel, onNewPointDestroy, newPointButtonComponent }) {
+  constructor({ container, pointsModel, destinationsModel, offersModel,
+    filterModel, onNewPointDestroy, newPointButtonComponent}) {
     this.#container = container;
     this.#pointsListComponent = container.querySelector('.trip-events__list');
     this.#pointsModel = pointsModel;
@@ -64,9 +54,10 @@ export default class BoardPresenter {
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
-  #newPointDestroyHandler = ({isCanceled}) => {
+  #newPointDestroyHandler = ({ isCanceled }) => {
     this.#creatingNewPoint = false;
     this.#onNewPointDestroy();
+
     if (!this.points.length && isCanceled) {
       this.#clearBoard();
       this.#renderBoard();
@@ -100,9 +91,11 @@ export default class BoardPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
     }
+
     remove(this.#loadingComponent);
 
     if (resetSortType) {
@@ -114,6 +107,7 @@ export default class BoardPresenter {
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
     }
+
     this.#creatingNewPoint = true;
     this.#sortType = SORT_TYPE.DAY;
     this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPES.EVERYTHING);
@@ -122,6 +116,7 @@ export default class BoardPresenter {
 
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
+
     switch (actionType) {
       case USER_ACTION.UPDATE_POINT:
         this.#pointPresenters.get(update.id).setSaving();
@@ -201,7 +196,7 @@ export default class BoardPresenter {
       onSortTypeChange: this.#handleSortTypeChange,
       sortType: this.#sortType
     });
-    render(this.#sortComponent, this.#container);
+    render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   #renderList(points) {

@@ -47,4 +47,32 @@ const API_METHOD = {
   DELETE: 'DELETE',
 };
 
-export { POINT_TYPES, FILTER_TYPES, FILTER_DATA_DETECTION, USER_ACTION, EDITING_TYPE, UPDATE_TYPE, SORT_TYPE, API_METHOD };
+const TIME_LIMIT = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+const MODE = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
+const BLANK_POINT = {
+  type: 'flight',
+  dateFrom: '',
+  dateTo: '',
+  basePrice: 0,
+  offers: [],
+  destination: null,
+  isFavorite: false
+};
+
+const NO_POINTS_TEXT_TYPE = {
+  [FILTER_TYPES.EVERYTHING]: 'Click New Event to create your first point',
+  [FILTER_TYPES.FUTURE]: 'There are no future events now',
+  [FILTER_TYPES.PAST]: 'There are no past events now',
+  [FILTER_TYPES.PRESENT]: 'There are no present events now',
+};
+
+export { POINT_TYPES, FILTER_TYPES, FILTER_DATA_DETECTION, USER_ACTION, BLANK_POINT,
+  EDITING_TYPE, UPDATE_TYPE, SORT_TYPE, API_METHOD, TIME_LIMIT, MODE, NO_POINTS_TEXT_TYPE };

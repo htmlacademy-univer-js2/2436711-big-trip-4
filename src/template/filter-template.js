@@ -1,20 +1,26 @@
-import { FILTERS } from '../const.js';
+import {camelizer} from '../utils';
 
-const createFilterTemplate = (activeFilter) => {
-  let template = '';
-  let check = '';
-  FILTERS.forEach((filter) => {
-    check = activeFilter === filter ? 'checked' : 'disabled';
-    template += `<div class="trip-filters__filter">
-    <input id="filter-${filter.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.toLowerCase()}" ${check}>
-    <label class="trip-filters__filter-label" for="filter-${filter.toLowerCase()}">${filter.toLowerCase()}</label>
-  </div>`;
-  });
-  return `<form class="trip-filters" action="#" method="get">
-    ${template}
-    <button class="visually-hidden" type="submit">Accept filter</button>
-  </form>
-  `;
-};
+export default function createFilterTemplate(filters, currentFilterType) {
+  return (
+    `
+    <div class="trip-main__trip-controls  trip-controls">
+      <div class="trip-controls__filters">
+        <h2 class="visually-hidden">Filter events</h2>
+        <form class="trip-filters" action="#" method="get">
 
-export { createFilterTemplate };
+          ${filters.map(({type, isDisabled}) => `
+            <div class="trip-filters__filter">
+              <input id="filter-${type}" class="trip-filters__filter-input  visually-hidden" ${isDisabled ? 'disabled' : ''} type="radio" name="trip-filter" value="${type}" ${type === currentFilterType ? 'checked' : ''}>
+              <label class="trip-filters__filter-label" for="filter-${type}">
+                ${camelizer(type)}
+              </label>
+            </div>
+          `).join('')}
+
+            <button class="visually-hidden" type="submit">Accept filter</button>
+        </form>
+        </div>
+    </div>
+    `
+  );
+}

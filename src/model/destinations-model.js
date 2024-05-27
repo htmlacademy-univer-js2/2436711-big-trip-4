@@ -1,10 +1,11 @@
 import Observable from '../framework/observable';
+import { UPDATE_TYPE } from '../const';
 
 export default class DestinationModel extends Observable {
   #destinations = [];
   #destinationsApi = null;
 
-  constructor({destinationsApi}) {
+  constructor({ destinationsApi }) {
     super();
     this.#destinationsApi = destinationsApi;
   }
@@ -22,6 +23,7 @@ export default class DestinationModel extends Observable {
       this.#destinations = await this.#destinationsApi.destinations;
     } catch(err) {
       this.#destinations = [];
+      this._notify(UPDATE_TYPE.INIT, {isError : true });
     }
   }
 }
