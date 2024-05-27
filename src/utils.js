@@ -79,5 +79,57 @@ function generateFilter(points) {
   );
 }
 
+function getWeightForNullDate(dateA, dateB) {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+}
+
+function sortDay(pointA, pointB) {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+}
+
+function sortTime(pointA, pointB) {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+  const durationA = dayjs.duration(dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'minute'));
+  const durationB = dayjs.duration(dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'minute'));
+
+  if (weight !== null) {
+    return weight;
+  } else {
+    if (durationA.asMilliseconds() > durationB.asMilliseconds()) {
+      return -1;
+    } else if (durationA.asMilliseconds() < durationB.asMilliseconds()) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+}
+
+function sortPrice(pointA, pointB) {
+  const diff = pointA.basePrice - pointB.basePrice;
+  if (diff > 0) {
+    return -1;
+  } else if (diff < 0) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+export {sortDay, sortTime, sortPrice};
 export { getRandomElement, getRandomInt, fullDate, getDuration, shortDate, humanizeHHmm, getLastWord, camelizer, generateFilter };
 export { isFutureDate, isPastDate, isPresentDate };
