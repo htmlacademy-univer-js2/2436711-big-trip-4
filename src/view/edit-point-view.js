@@ -1,14 +1,14 @@
 import dayjs from 'dayjs';
-import {POINT_TYPES, DESTINATIONS, EDITING_TYPE} from '../const.js';
-import {getLastWord, camelizer, fullDate} from '../utils.js';
+import {POINT_TYPES, EDITING_TYPE} from '../const.js';
+import {getLastWord, camelizer} from '../utils.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import DatePicker from '../date-picker';
 import he from 'he';
 
 const BLANK_POINT = {
   type: 'flight',
-  dateFrom: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-  dateTo: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+  dateFrom: '',
+  dateTo: '',
   basePrice: 0,
   offers: [],
   destination: null
@@ -25,7 +25,7 @@ function createEventSelector() {
   }
 
   return (`
-    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+    <input class="event__type-toggle visually-hidden" id="event-type-toggle-1" type="checkbox">
     <div class="event__type-list">
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Event type</legend>
@@ -91,15 +91,15 @@ function createDestinationSection(destination) {
     : '';
 }
 
-function createDestinationList() {
+function createDestinationList(destinations) {
   return `
     <datalist id="destination-list-1">
-      ${DESTINATIONS.map((item) => (`<option value="${item}"></option>`)).join('')}
+      ${destinations.map((item) => (`<option value="${item.name}"></option>`)).join('')}
     </datalist>
   `;
 }
 
-function createEditPointTemplate({ point, destinations, allOffers }) {
+function createEditPointTemplate({ point, destinations, allOffers, typeForm }) {
   const { type, dateFrom, dateTo, basePrice, destination, offers } = point;
   const currentDestination = destinations.find((dest) => dest.id === destination);
   const currentOffers = allOffers.find((offer) => offer.type === type)?.offers;
@@ -118,16 +118,16 @@ function createEditPointTemplate({ point, destinations, allOffers }) {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${camelizer(type)}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1">
-        ${createDestinationList()}
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1">
+        ${createDestinationList(destinations)}
       </div>
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${fullDate(dateFrom)}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${fullDate(dateTo)}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -135,14 +135,17 @@ function createEditPointTemplate({ point, destinations, allOffers }) {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
       </div>
 
       <button class="event__save-btn btn btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
+      <button class="event__reset-btn" type="reset">${typeForm === EDITING_TYPE.NEW ? 'Cancel' : 'Delete'}</button>
+      ${typeForm === EDITING_TYPE.NEW
+    ? ''
+    : `<button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>`}
+
     </header>
     <section class="event__details">
       ${createOffersSelector({offers, currentOffers})}

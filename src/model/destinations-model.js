@@ -1,13 +1,27 @@
-import { getDestinations } from '../mock/destination';
+import Observable from '../framework/observable';
 
-export default class DestinationsModel {
-  destinations = getDestinations();
+export default class DestinationModel extends Observable {
+  #destinations = [];
+  #destinationsApi = null;
 
-  getDestinations() {
-    return this.destinations;
+  constructor({destinationsApi}) {
+    super();
+    this.#destinationsApi = destinationsApi;
   }
 
-  getDestinationById(id) {
-    return this.destinations.find((dest) => (dest.id === id));
+  get destinations() {
+    return this.#destinations;
+  }
+
+  getById(id) {
+    return this.#destinations.find((dest) => (dest.id === id));
+  }
+
+  async init() {
+    try {
+      this.#destinations = await this.#destinationsApi.destinations;
+    } catch(err) {
+      this.#destinations = [];
+    }
   }
 }

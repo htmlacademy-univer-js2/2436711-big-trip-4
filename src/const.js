@@ -1,7 +1,5 @@
 import {isFutureDate, isPastDate, isPresentDate} from './utils';
 
-const DESTINATIONS = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'Saint Petersburg', 'Vienna'];
-
 const POINT_TYPES = ['taxi', 'flight', 'bus', 'train', 'ship', 'drive', 'check-in', 'sightseeing', 'restaurant'];
 
 const FILTER_TYPES = {
@@ -34,6 +32,7 @@ const UPDATE_TYPE = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const EDITING_TYPE = {
@@ -41,4 +40,9 @@ const EDITING_TYPE = {
   NEW: 'NEW'
 };
 
-export { DESTINATIONS, POINT_TYPES, FILTER_TYPES, FILTER_DATA_DETECTION, USER_ACTION, EDITING_TYPE, UPDATE_TYPE, SORT_TYPE };
+const API_METHOD = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
+export { POINT_TYPES, FILTER_TYPES, FILTER_DATA_DETECTION, USER_ACTION, EDITING_TYPE, UPDATE_TYPE, SORT_TYPE, API_METHOD };
