@@ -1,17 +1,30 @@
-import { getRandomElement, getRandomInt } from '../util.js';
-import { CITIES, DESCRIPTION, PicturesCount } from '../const.js';
+import { getRandomElement, getRandomInt } from '../utils';
+import {DESTINATIONS} from '../const';
+import {DESCRIPTION} from './const';
 
-const generateDestinations = () => CITIES.map((city) => (
-  {
-    id: crypto.randomUUID(),
-    name: city,
-    description: getRandomElement(DESCRIPTION),
-    pictures: Array.from({length: getRandomInt(PicturesCount.MIN, PicturesCount.MAX)}, (_, index) => (
-      {
-        src: `https://loremflickr.com/248/152?random=${index}`,
-        description: `${city} view`
-      }
-    ))
-  }));
+const destinations = DESTINATIONS.map((item, index) => ({
+  id: index,
+  description: DESCRIPTION,
+  name: item,
+  pictures: [
+    {
+      src: `https://loremflickr.com/248/152?random=${getRandomInt(1, 100)}`,
+      description: DESCRIPTION
+    }, {
+      src: `https://loremflickr.com/248/152?random=${getRandomInt(100, 200)}`,
+      description: DESCRIPTION
+    }, {
+      src: `https://loremflickr.com/248/152?random=${getRandomInt(200, 300)}`,
+      description: DESCRIPTION
+    }]
+}));
 
-export { generateDestinations };
+function getRandomDestination() {
+  return getRandomElement(destinations);
+}
+
+function getDestinations() {
+  return destinations;
+}
+
+export { getRandomDestination, getDestinations };

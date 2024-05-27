@@ -1,24 +1,28 @@
-import TripPresenter from './presenter/trip-presenter.js';
+import BoardPresenter from './presenter/board-presenter';
+import FilterPresenter from './presenter/filter-presenter';
+import InfoPresenter from './presenter/info-presenter';
+import OffersModel from './model/offers-model';
+import DestinationModel from './model/destinations-model';
+import PointsModel from './model/points-model';
+import {generateFilter} from './utils';
 
-import MockService from './service/mock-service.js';
-import DestinationsModel from './model/destination-model.js';
-import OffersModel from './model/offer-model.js';
-import PointModel from './model/point-model.js';
+const header = document.querySelector('.page-header');
+const infoHeader = document.querySelector('.trip-main');
+const headerFilterElement = header.querySelector('.trip-controls__filters');
 
-const bodyElement = document.querySelector('body');
-const mainElement = bodyElement.querySelector('.page-main');
-const eventListElement = mainElement.querySelector('.trip-events');
+const main = document.querySelector('.page-main');
+const containerElement = main.querySelector('.trip-events');
 
-const mockService = new MockService();
-const destinationsModel = new DestinationsModel(mockService);
-const offersModel = new OffersModel(mockService);
-const pointModel = new PointModel(mockService);
+const destinationModel = new DestinationModel();
+const offersModel = new OffersModel();
+const pointsModel = new PointsModel({ destinationModel, offersModel });
 
-const tripPresenter = new TripPresenter(
-  eventListElement,
-  destinationsModel,
-  offersModel,
-  pointModel
-);
+const filters = generateFilter(pointsModel.points);
 
-tripPresenter.init();
+const infoPresenter = new InfoPresenter({container: infoHeader});
+const filterPresenter = new FilterPresenter({container: headerFilterElement, filters});
+const boardPresenter = new BoardPresenter({container: containerElement, pointsModel});
+
+infoPresenter.init();
+filterPresenter.init();
+boardPresenter.init();
