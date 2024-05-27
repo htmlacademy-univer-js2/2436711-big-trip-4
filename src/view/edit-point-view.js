@@ -1,174 +1,17 @@
 import dayjs from 'dayjs';
-import {POINT_TYPES, EDITING_TYPE} from '../const.js';
-import {getLastWord, camelizer} from '../utils.js';
+import {EDITING_TYPE} from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import DatePicker from '../date-picker';
-import he from 'he';
-
-const BLANK_POINT = {
-  type: 'flight',
-  dateFrom: '',
-  dateTo: '',
-  basePrice: 0,
-  offers: [],
-  destination: null,
-  isFavorite: false
-};
-
-function createEventSelector({isDisabled}) {
-  function createEventItems() {
-    return POINT_TYPES.map((item) => (`
-      <div class="event__type-item">
-        <input id="event-type-${item}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${item}">
-        <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-1">${camelizer(item)}</label>
-      </div>
-    `)).join('');
-  }
-
-  return (`
-    <input class="event__type-toggle visually-hidden" ${isDisabled ? 'disabled' : ''} id="event-type-toggle-1" type="checkbox">
-    <div class="event__type-list">
-      <fieldset class="event__type-group">
-        <legend class="visually-hidden">Event type</legend>
-        ${createEventItems()}
-      </fieldset>
-    </div>
-  `);
-}
-
-function createOffersSelector({offers, currentOffers, isDisabled}) {
-  function createOfferItem() {
-    return currentOffers.map((item) => {
-      const checkedClassname = offers.some((curValue) => (curValue.id === item.id)) ? 'checked' : '';
-      const slug = getLastWord(item.title);
-      return `
-        <div class="event__offer-selector">
-          <input class="event__offer-checkbox visually-hidden" ${isDisabled ? 'disabled' : ''} id="event-offer-${slug}-${item.id}" type="checkbox" name="event-offer-${slug}" ${checkedClassname}>
-          <label class="event__offer-label" for="event-offer-${slug}-${item.id}">
-            <span class="event__offer-title">${item.title}</span>
-              &plus;&euro;&nbsp;
-            <span class="event__offer-price">${item.price}</span>
-          </label>
-        </div>
-      `;
-    }).join('');
-  }
-
-  return currentOffers.length
-    ? `
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-        <div class="event__available-offers">
-          ${createOfferItem({isDisabled})}
-        </div>
-      </section>
-    `
-    : '';
-}
-
-function createDestinationSection(destination) {
-  const { description, pictures, name } = destination;
-
-  function createPicturesSection() {
-    return pictures.length
-      ? `
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            ${pictures.map((item) => (`<img class="event__photo" src="${item.src}" alt="${item.description}">`)).join('')}
-          </div>
-        </div>
-      `
-      : '';
-  }
-
-  return name
-    ? `
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${description}</p>
-        ${createPicturesSection()}
-      </section>
-    `
-    : '';
-}
-
-function createDestinationList(destinations) {
-  return `
-    <datalist id="destination-list-1">
-      ${destinations.map((item) => (`<option value="${item.name}"></option>`)).join('')}
-    </datalist>
-  `;
-}
-
-function createEditPointTemplate({ point, destinations, allOffers, typeForm }) {
-  const { type, dateFrom, dateTo, basePrice, destination, offers, isDisabled, isSaving, isDeleting } = point;
-  const currentDestination = destinations.find((dest) => dest.id === destination);
-  const isRenderDescription = currentDestination?.description || currentDestination?.pictures.length;
-  const currentOffers = allOffers.find((offer) => offer.type === type)?.offers;
-  const currentResetButton = typeForm === EDITING_TYPE.NEW ? 'Cancel' : 'Delete';
-  const isSubmitDisabled = !destination;
-  return `
-    <li class="trip-events__item"><form class="event event--edit" action="#" method="post">
-    <header class="event__header">
-      <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-1">
-          <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
-        </label>
-        ${createEventSelector({isDisabled})}
-      </div>
-
-      <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
-          ${camelizer(type)}
-        </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" ${isDisabled ? 'disabled' : ''} value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1">
-        ${createDestinationList(destinations)}
-      </div>
-
-      <div class="event__field-group  event__field-group--time">
-        <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" ${isDisabled ? 'disabled' : ''} value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}">
-        &mdash;
-        <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" ${isDisabled ? 'disabled' : ''} value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}">
-      </div>
-
-      <div class="event__field-group  event__field-group--price">
-        <label class="event__label" for="event-price-1">
-          <span class="visually-hidden">Price</span>
-          &euro;
-        </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" ${isDisabled ? 'disabled' : ''} value="${he.encode(basePrice.toString())}">
-      </div>
-
-      <button class="event__save-btn  btn  btn--blue" ${isSubmitDisabled || isDisabled ? 'disabled' : ''} type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
-    <button class="event__reset-btn" ${isDisabled ? 'disabled' : ''} type="reset">${isDeleting ? 'Deleting...' : currentResetButton}</button>
-      ${typeForm === EDITING_TYPE.NEW
-    ? ''
-    : `<button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>`}
-    </header>
-
-    ${!isRenderDescription && !currentOffers.length
-    ? ''
-    : `<section class="event__details">
-      ${createOffersSelector({ offers, currentOffers, isDisabled })}
-      ${!currentDestination?.description && !currentDestination?.pictures.length ? '' : createDestinationSection(currentDestination)}
-    </section>`}
-  </form></li>`;
-}
+import createEditPointTemplate from '../template/edit-point-template';
+import {BLANK_POINT} from '../const.js';
 
 export default class EditPointView extends AbstractStatefulView{
   #handleFormSubmit = null;
   #handleFormReset = null;
   #handleDeleteClick = null;
-
   #destinations = null;
   #offers = null;
   #type = null;
-
   #datePickerFrom = null;
   #datePickerTo = null;
 

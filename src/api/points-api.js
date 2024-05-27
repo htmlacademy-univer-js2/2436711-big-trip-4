@@ -3,8 +3,7 @@ import { API_METHOD } from '../const';
 
 export default class PointsApiService extends ApiService {
   get points() {
-    return this._load({ url: 'points' })
-      .then(ApiService.parseResponse);
+    return this._load({ url: 'points' }).then(ApiService.parseResponse);
   }
 
   async updatePoint(point) {
@@ -23,7 +22,7 @@ export default class PointsApiService extends ApiService {
       url: 'points',
       method: API_METHOD.POST,
       body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
     return await ApiService.parseResponse(response);
