@@ -6,9 +6,11 @@ import PointPresenter from './point-presenter';
 import {sortDay, sortPrice, sortTime} from '../utils';
 
 export default class BoardPresenter {
-  constructor({container, pointsModel }) {
+  constructor({container, pointsModel, destinationsModel, offersModel }) {
     this.container = container;
     this.pointsModel = pointsModel;
+    this.destinationsModel = destinationsModel;
+    this.offersModel = offersModel;
     this.pointPresenters = new Map();
   }
 
@@ -47,6 +49,8 @@ export default class BoardPresenter {
   renderPoint(point) {
     const pointPresenter = new PointPresenter({
       pointsListContainer: this.pointsListComponent.element,
+      destinationsModel: this.destinationsModel,
+      offersModel: this.offersModel,
       onDataChange: this.handlePointChange,
       onModeChange: this.handleModeChange});
     pointPresenter.init(point);
