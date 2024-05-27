@@ -51,7 +51,6 @@ const boardPresenter = new BoardPresenter({
 
 function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
-  boardPresenter.rerender();
 }
 
 function handleNewPointButtonClick() {

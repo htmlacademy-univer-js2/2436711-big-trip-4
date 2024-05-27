@@ -1,5 +1,4 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
-import { nanoid } from 'nanoid';
 import { USER_ACTION, UPDATE_TYPE, EDITING_TYPE } from '../const.js';
 import EditPointView from '../view/edit-point-view';
 
@@ -39,27 +38,24 @@ export default class NewPointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  destroy() {
+  destroy({isCanceled = true} = {}) {
     if (this.#pointEditComponent === null) {
       return;
     }
-
-    this.#handleDestroy();
 
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleDestroy({isCanceled});
   }
 
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       USER_ACTION.ADD_POINT,
       UPDATE_TYPE.MINOR,
-      { id: nanoid(), ...point },
+      point,
     );
-
-    this.destroy();
   };
 
   #handleDeleteClick = () => {
@@ -72,4 +68,23 @@ export default class NewPointPresenter {
       this.destroy();
     }
   };
+
+  setSaving() {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
 }
