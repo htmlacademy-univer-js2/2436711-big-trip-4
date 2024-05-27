@@ -1,6 +1,6 @@
 import { getDestinations } from '../mock/destination';
 
-export default class DestinationModel {
+export default class DestinationsModel {
   destinations = getDestinations();
 
   getDestinations() {
