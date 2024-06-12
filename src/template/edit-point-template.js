@@ -59,7 +59,7 @@ export default function createEditPointTemplate({ point, destinations, allOffers
         </button>`}
     </header>
 
-    ${!isRenderDescription && !currentOffers.length
+    ${!isRenderDescription && !currentOffers?.length
     ? ''
     : `<section class="event__details">
       ${createOffersSelectorTemplate({ offers, currentOffers, isDisabled })}

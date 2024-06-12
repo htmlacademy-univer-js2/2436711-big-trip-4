@@ -17,7 +17,6 @@ export default class BoardPresenter {
   #pointsListComponent = null;
   #sortComponent = null;
   #noPointComponent = null;
-  #newPointButtonComponent = null;
   #loadingComponent = new LoadingView();
   #pointPresenters = new Map();
   #newPointPresenter = null;
@@ -32,14 +31,13 @@ export default class BoardPresenter {
   });
 
   constructor({ container, pointsModel, destinationsModel, offersModel,
-    filterModel, onNewPointDestroy, newPointButtonComponent}) {
+    filterModel, onNewPointDestroy}) {
     this.#container = container;
     this.#pointsListComponent = container.querySelector('.trip-events__list');
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
-    this.#newPointButtonComponent = newPointButtonComponent;
     this.#onNewPointDestroy = onNewPointDestroy;
 
     this.#newPointPresenter = new NewPointPresenter({

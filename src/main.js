@@ -50,7 +50,6 @@ const boardPresenter = new BoardPresenter({
   offersModel,
   filterModel,
   onNewPointDestroy: handleNewPointFormClose,
-  newPointButtonComponent
 });
 
 function handleNewPointFormClose() {
@@ -62,6 +61,16 @@ function handleNewPointButtonClick() {
   newPointButtonComponent.element.disabled = true;
 }
 
+const disableNewEventButton = () => {
+  setTimeout(() => {newPointButtonComponent.element.disabled = true;}, 0);
+};
+
+function handleNetworkProblems(actionType, updateType) {
+  if(updateType.isError) {
+    disableNewEventButton();
+  }
+}
+
 const newPointButtonPresenter = new NewPointButtonPresenter({
   container: infoHeader,
   component: newPointButtonComponent,
@@ -71,7 +80,10 @@ async function initModels() {
   await destinationsModel.init();
   await offersModel.init();
   await pointsModel.init();
+  newPointButtonComponent.element.disabled = false;
 }
+
+pointsModel.addObserver(handleNetworkProblems);
 
 initModels();
 

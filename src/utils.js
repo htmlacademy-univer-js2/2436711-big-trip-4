@@ -124,14 +124,18 @@ function getInfoFromPoints({ points, destinations, offers }) {
   const arrayOfDestinations = [];
   let sumOfTrip = 0;
   sortedPoints.forEach((point) => {
-    const destination = destinations.find((dest) => dest.id === point.destination).name;
-    arrayOfDestinations.push(destination);
-    const offersOfCurrentType = offers.find((offer) => offer.type === point.type).offers;
-    offersOfCurrentType.forEach((offer) => {
-      if (point.offers.includes(offer.id)) {
-        sumOfTrip += offer.price;
-      }
-    });
+    const destination = destinations.find((dest) => dest.id === point.destination)?.name;
+    if (destination) {
+      arrayOfDestinations.push(destination);
+    }
+    const offersOfCurrentType = offers.find((offer) => offer.type === point.type)?.offers;
+    if (offersOfCurrentType) {
+      offersOfCurrentType.forEach((offer) => {
+        if (point.offers.includes(offer.id)) {
+          sumOfTrip += offer.price;
+        }
+      });
+    }
     sumOfTrip += point.basePrice;
   });
 

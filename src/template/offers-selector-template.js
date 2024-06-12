@@ -1,7 +1,7 @@
 import createOfferItemTemplate from './offer-item-template';
 
 export default function createOffersSelectorTemplate({offers, currentOffers, isDisabled}) {
-  return currentOffers.length
+  return currentOffers?.length
     ? `
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
